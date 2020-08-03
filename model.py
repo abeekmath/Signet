@@ -7,7 +7,7 @@ class SiameseNet(nn.Module):
     def __init__(self):
         super(SiameseNet, self).__init__()
         self.conv_layers = nn.Sequential(
-            nn.Conv2d(1, 96, 11, stride=1), 
+            nn.Conv2d(3, 96, 11, stride=1), 
             nn.ReLU(inplace=True), 
             nn.LocalResponseNorm(5, k=2),
             nn.MaxPool2d(3, 2),

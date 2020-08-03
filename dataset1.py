@@ -15,13 +15,7 @@ class IcdarDataset(Dataset):
     def __init__(self, data_root, csv_file, resize=None):
         self.data_root = data_root
         self.dataframe = pd.read_csv(csv_file)
-        self.resize = resize 
-
-        mean = (0.485, 0.456, 0.406)
-        std = (0.229, 0.224, 0.225)
-        self.aug = albumentations.Compose([
-            albumentations.Normalize(mean, std, max_pixel_value=255.0, always_apply=True)
-        ])
+        self.resize = resize
 
     def __len__(self):
         return len(self.dataframe)
@@ -33,10 +27,9 @@ class IcdarDataset(Dataset):
                                  self.dataframe.iloc[idx, 1])
         label = self.dataframe.iloc[idx, 2]
 
-        img0 = Image.open(img0_path)
-        img1 = Image.open(img1_path)
-    
-        
+        img0 = Image.open(img0_path).convert("L")
+        img1 = Image.open(img1_path).convert("L")
+
         if self.resize is not None: 
             image0 = img0.resize(
                 (self.resize[1], self.resize[0]), resample=Image.BILINEAR
@@ -44,14 +37,10 @@ class IcdarDataset(Dataset):
             image1 = img1.resize(
                 (self.resize[1], self.resize[0]), resample=Image.BILINEAR
             )
-            
 
-            image0, image1 = np.array(image0), np.array(image1)
-            augmented_0, augmented_1 = self.aug(image=image0), self.aug(image=image1)
-            image0, image1 = augmented_0["image"], augmented_1["image"]
-
-            image0 = np.transpose(image0, (2, 0, 1)).astype(np.float32)
-            image1 = np.transpose(image1, (2, 0, 1)).astype(np.float32)
+            if transform is not None:
+                image0 = self.transform(image0)
+                image1 = self.transform(image1)
 
             return {
                 "images0": torch.tensor(image0, dtype=torch.float),
