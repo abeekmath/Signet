@@ -1,4 +1,4 @@
-# DeepPixFace-PyTorch
+# SigNet-PyTorch
 
 A PyTorch implementation of [Convolutional Siamese Network for Writer Independent Oflline Signature Verification](https://arxiv.org/abs/1707.02131)
 
